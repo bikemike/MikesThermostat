@@ -1,0 +1,377 @@
+power on
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 ff db 
+TX: aa 55 c1 05 00 be 00 9d 1e 00 00 00 00 00 ff 3d 
+power off
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 00 dc 
+TX: aa 55 c1 05 00 be 00 00 1e 00 00 00 00 00 00 a1 
+automatic:
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 ff db 
+TX: aa 55 c1 05 00 bf 00 9d 1e 00 00 00 00 00 ff 3e 
+manual:
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 ff ff da 
+TX: aa 55 c1 05 00 bf 00 00 1e 00 00 00 00 ff ff a0 
+
+manual temp 6 degrees:
+RX: aa 55 c1 05 ff ff ff ff 0c ff ff ff 00 ff ff c8 
+TX: aa 55 c1 05 00 c0 00 9d 0c 00 00 00 00 ff ff 2c 
+
+15.5 degrees:
+RX: aa 55 c1 05 ff ff ff ff 1f ff ff ff 00 ff ff db 
+TX: aa 55 c1 05 00 c1 00 00 1f 00 00 00 00 ff ff a3 
+35 degrees: indoor temp 19.3, floor temp 15.7
+RX: aa 55 c1 05 ff ff ff ff 46 ff ff ff 00 ff ff 02 
+TX: aa 55 c1 05 00 c2 00 9d 46 00 00 00 00 ff ff 68 
+TX: aa 55 c1 05 00 c2 00 9d 46 00 00 00 00 ff ff 68 
+
+
+unlock
+RX: aa 55 c1 05 ff ff ff ff 46 ff ff ff 00 ff ff 02 
+TX: aa 55 c1 05 00 c0 00 00 46 00 00 00 00 ff ff c9 
+lock:
+RX: aa 55 c1 05 ff ff ff ff 46 ff ff ff ff ff ff 01 
+TX: aa 55 c1 05 00 c1 00 9d 46 00 00 00 ff ff ff 66 
+
+outer mode
+RX: aa 55 c2 00 00 00 ec 0a 1e 00 01 37 00 00 00 0d 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 01 37 00 03 01 11 
+internal mode:
+RX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 00 00 0c 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+both mode
+RX: aa 55 c2 00 00 00 ec 0a 1e 00 02 37 00 00 00 0e 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 02 37 00 03 01 12 
+
+antifreeze off:
+RX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 00 00 0c 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+antifreeze on:
+RX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 00 00 0b 
+TX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 03 01 0f 
+
+backlight off:
+
+RX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 00 00 0b 
+TX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 03 01 0f 
+
+backlight on
+RX: aa 55 c2 ff 00 ff ec 0a 1e 00 00 37 00 00 00 0a 
+TX: aa 55 c2 ff 00 ff ec 0a 1e 00 00 37 00 03 01 0e 
+
+powerstate on:
+RX: aa 55 c2 00 ff ff ec 0a 1e 00 00 37 00 00 00 0a 
+TX: aa 55 c2 00 ff ff ec 0a 1e 00 00 37 00 03 01 0e 
+
+powerstate off:
+RX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 00 00 0b 
+TX: aa 55 c2 00 00 ff ec 0a 1e 00 00 37 00 03 01 0f 
+
+RX: 00 
+TX: 00 
+RX: 1a 94 eb 8a 05 53 5a d3 fa 37 74 ff d9 57 ad 6d ff a8 2f 80 b7 33 c7 f4 d9 5a 6b a7 a8 2e 80 47 cd 3a 68 99 4b 6b cb fd 54 2f 80 57 05 75 d5 19 69 68 69 eb b5 7d af a2 7e ea 69 1d f5 a4 5d 99 d3 45 3f b5 aa 17 1d b7 d0 fb f7 
+RX: da 43 da bf fe 76 a2 76 ff cf ed 
+RX: 47 9a e7 1f d3 dd 59 d9 24 fd e3 d0 54 e7 db 8d f9 4f f5 6a 09 0d d5 fe dc 92 9d f5 35 82 a8 e7 e9 23 ea aa 0a 
+RX: 0d 0a 3e 3e 3e 62 79 2d 74 78 78 2d 33 2e 32 2e 30 72 65 6c 0d 0a 
+
+RX: aa 55 c0 c1 00 00 00 00 00 00 00 00 00 00 00 80 
+RX: aa 55 c0 c1 00 00 00 00 00 00 00 00 00 00 00 80 
+TX: aa 55 c1 06 00 b7 00 9d 1e 00 00 00 00 00 00 38 
+
+RX: aa 55 c0 c2 00 00 00 00 00 00 00 00 00 00 00 81 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+
+RX: aa 55 c0 c3 00 00 00 00 00 00 00 00 00 00 00 82 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+
+RX: aa 55 c0 c4 00 00 00 00 00 00 00 00 00 00 00 83 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+
+RX: aa 55 c0 c5 00 00 00 00 00 00 00 00 00 00 00 84 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+
+RX: aa 55 c0 c6 00 00 00 00 00 00 00 00 00 00 00 85 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+
+RX: aa 55 c0 c7 00 00 00 00 00 00 00 00 00 00 00 86 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+
+RX: aa 55 c0 c8 00 00 00 00 00 00 00 00 00 00 00 87 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+
+RX: aa 55 c0 c9 00 00 00 00 00 00 00 00 00 00 00 88 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+
+RX: aa 55 c1 03 ff ff ff ff 1e ff ff ff 00 00 00 da 
+TX: aa 55 c1 03 00 b8 00 00 1e 00 00 00 00 00 00 99 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 00 dc 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+
+RX: aa 55 c1 05 06 09 00 ff 1e ff ff ff 00 00 00 ee 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b5 00 00 1e 00 00 00 00 00 00 98 
+TX: aa 55 c1 05 00 b7 00 00 1e 00 00 00 00 00 00 9a 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+
+RX: aa 55 c1 04 ff ff ff ff 1e ff ff ff 00 00 00 db 
+TX: aa 55 c1 04 00 b6 00 00 1e 00 00 00 00 00 00 98 
+
+RX: aa 55 c1 02 ff ff ff ff 1e ff ff ff 00 00 00 d9 
+TX: aa 55 c1 02 00 b6 00 00 1e 00 00 00 00 00 00 96 
+
+RX: aa 55 c1 03 ff ff ff ff 1e ff ff ff 00 00 00 da 
+TX: aa 55 c1 03 00 b6 00 00 1e 00 00 00 00 00 00 97 
+
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 00 dc 
+TX: aa 55 c1 05 00 b6 00 00 1e 00 00 00 00 00 00 99 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+
+RX: aa 55 c1 05 06 09 04 ff 1e ff ff ff 00 00 00 f2 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c1 05 00 b5 00 00 1e 00 00 00 00 00 00 98 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+
+RX: aa 55 c1 04 ff ff ff ff 1e ff ff ff 00 00 00 db 
+TX: aa 55 c1 04 00 b8 00 9d 1e 00 00 00 00 00 00 37 
+
+RX: aa 55 c1 02 ff ff ff ff 1e ff ff ff 00 00 00 d9 
+TX: aa 55 c1 02 00 b7 00 9d 1e 00 00 00 00 00 00 34 
+
+RX: aa 55 c1 03 ff ff ff ff 1e ff ff ff 00 00 00 da 
+TX: aa 55 c1 03 00 b7 00 00 1e 00 00 00 00 00 00 98 
+
+RX: aa 55 c1 05 ff ff ff ff 1e ff ff ff 00 00 00 dc 
+TX: aa 55 c1 05 00 b7 00 00 1e 00 00 00 00 00 00 9a 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+
+RX: aa 55 c1 05 06 09 0b ff 1e ff ff ff 00 00 00 f9 
+TX: aa 55 c1 05 00 b7 00 00 1e 00 00 00 00 00 00 9a 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c1 05 00 bb 00 00 1e 00 00 00 00 00 00 9e 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b8 00 00 1e 00 00 00 00 00 00 9b 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c1 05 00 b6 00 9d 1e 00 00 00 00 00 00 36 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c1 05 00 b7 00 9d 1e 00 00 00 00 00 00 37 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 04 00 b9 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c2 00 00 00 ec 0a 1e 00 00 37 00 03 01 10 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c3 3d 0a 50 1e 6e 2c 7b 1e aa 2c dc 1e 7a 
+TX: aa 55 c4 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9c 
+TX: aa 55 c5 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9d 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c6 3c 2c 50 1e 6e 2c 7b 1e aa 2c dc 1e 9e 
+TX: aa 55 c7 3c 31 50 1e 6e 2c 7b 1e aa 2c dc 1e a4 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c8 3c 2b 50 2c 6e 2c 7b 2c aa 2c dc 1e bb 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b8 00 9d 1e 00 00 00 00 00 00 38 
+TX: aa 55 c9 3c 2c 50 2c 6e 2c 7b 2c aa 2d dc 1e be 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 b9 00 9d 1e 00 00 00 00 00 00 39 
+TX: aa 55 c1 05 00 bb 00 9d 1e 00 00 00 00 00 00 3b 
+
+
+struct settings1_Rx // C1 _RX
+{
+uint8_t magic1; // AA
+uint8_t magic2; // 55
+uint8_t msgType; // c1
+uint8_t wifiConfigState; // 00 = start wifi hotspot, 02 = disconnected, 03 = connecting, 04 = disconnecting?, 05 = connected , 06 
+uint16_t temperatureInternal; // big endian
+uint16_t temperatureExternal; // big endian 00 F2 == 242 == 24.2, 01 01 == 261 == 26.1
+uint8_t set_point_temp;    // 1E 2f 2b 2d = 30 43 47 49
+uint8_t unknown3;    // 00
+uint8_t unknown4;    // 00
+uint8_t unknown5;    // 00
+uint8_t childLock; // lock = ff, unlocked = 00
+uint8_t mode;      // manual = ff, program mode = 00
+uint8_t power;     // thermostat on=1/off=0
+uint8_t checksum;  // = sum % FF
+};
+
+
+struct settings1 // C1 _TX // to MCU
+{
+uint8_t magic1; // AA
+uint8_t magic2; // 55
+uint8_t msgType; // c1
+uint8_t wifiConfigState; // 00 = start wifi hotspot, 02 = disconnected, 03 = connecting, 04 = disconnecting?, 05 = connected , 06 
+uint8_t dayOfWeek; 
+uint8_t hourOfDay; 
+uint8_t minuteOfDay;
+uint8_t unknown1;    // FF
+uint8_t unknown2;    // 1E 2f 2b 2d = 30 43 47 49
+uint8_t unknown3;    // FF
+uint8_t unknown4;    // FF
+uint8_t unknown5;    // FF
+uint8_t childLock; // 00
+uint8_t mode;      // 00
+uint8_t power;     // 00
+uint8_t checksum;  // = sum % FF
+};
+
+struct settings2 // C2
+{
+uint8_t magic1; // AA
+uint8_t magic2; // 55
+uint8_t msgType; // c2
+uint8_t backlightMode; // 00 = autooff, ff = steady on
+uint8_t powerMode; // 00 = off when powered on, ff == last state of power
+uint8_t antifreezeMode; // 00 = off, ff = on 
+uint8_t unknown1; // ec = 236
+uint8_t unknown2; // 0a = 10
+uint8_t unknown3; // 1e = 30
+uint8_t unknown4; // 00
+uint8_t sensorMode; // 00 = internal, 01 = external, 02 = both 
+uint8_t unknown5; // 37 = 55 - therm max??
+uint8_t unknown6; // 00
+uint8_t unknown7; // ff - 03
+uint8_t unknown8; // 01
+uint8_t checksum;  // = sum % FF
+};
+
+
+
+struct schedule
+{
+uint8_t magic1; // AA
+uint8_t magic2; // 55
+uint8_t msgType; // c3-c9
+uint8_t time1;  // 60 = 6am
+uint8_t temp1;  // 10 = 5  degrees
+uint8_t time2;  
+uint8_t temp2;  // 30 = 15 
+uint8_t time3;  // 123 = 12:30
+uint8_t temp3;  // 44 = 22
+uint8_t time4;
+uint8_t temp4;
+uint8_t time5;    //
+uint8_t temp5; // lock = ff, unlocked = 00
+uint8_t time6;      // manual = ff, program mode = 00unkown
+uint8_t temp6;     // thermostat on=1/off=0
+uint8_t checksum;  // = sum % FF
+};
+
+
+
+*/
+
