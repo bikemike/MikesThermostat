@@ -24,7 +24,7 @@ uint32_t lastMS = 0;
 
 C17GH3State state;
 
-bool printedConnectionInfo = false;
+wl_status_t wifiStatus = WL_NO_SHIELD;
 
 void setup()
 {
@@ -32,6 +32,7 @@ void setup()
 
 
 	wifiManager.setConfigPortalTimeout(120);
+	wifiManager.setDebugOutput(false);
 
 	Serial.begin(9600);
 
@@ -39,24 +40,51 @@ void setup()
 		Serial.println("Configuration portal opened");
         wifiManager.startConfigPortal(devName.c_str());
 		Serial.println("Configuration portal closed");
-		printedConnectionInfo = false;
     });
 }
 
 
 void loop()
 {
-	if (!printedConnectionInfo)
+	
+	if (WiFi.status() != wifiStatus)
 	{
-		if (WiFi.status() == WL_CONNECTED)
+		wifiStatus = WiFi.status();
+		String status;
+		switch(wifiStatus)
 		{
-			Serial.print("Connected to ");
-			Serial.print(WiFi.SSID());
-			Serial.print(", IP address: ");
-			Serial.println(WiFi.localIP());
-			printedConnectionInfo = true;
+			case WL_NO_SHIELD:
+				status = "no shield";
+				break;
+			case WL_IDLE_STATUS:
+				status = "idle";
+				break;
+			case WL_NO_SSID_AVAIL:
+				status = "no ssid available";
+				break;
+			case WL_SCAN_COMPLETED:
+				status = "scan completed";
+				break;
+			case WL_CONNECTED:
+				status = "connected. SSID: ";
+				status += WiFi.SSID();
+				status += ", IP address: ";
+				status += WiFi.localIP().toString();
+				break;
+			case WL_CONNECT_FAILED:
+				status = "connect failed";
+				break;
+			case WL_CONNECTION_LOST:
+				status = "connection lost";
+				break;
+			case WL_DISCONNECTED:
+				status = "disconnected";
+				break;
 		}
+
+		Serial.println("WiFi Status changed: " + status);
 	}
+
 	if (Serial.available())
 	{
 		if (!inSerial)
