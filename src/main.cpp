@@ -14,15 +14,18 @@
 #include "C17GH3.h"
 
 WiFiManager wifiManager;
-
+ESP8266WebServer webServer(80);
 
 C17GH3MessageBuffer msgBuffer;
+C17GH3State state;
+
 String sBuffer;
 
 bool inSerial = false;
 uint32_t lastMS = 0;
 
-C17GH3State state;
+static void initWebserver();
+
 
 wl_status_t wifiStatus = WL_NO_SHIELD;
 
@@ -30,7 +33,7 @@ void setup()
 {
 	String devName = String("Thermostat-") + String(ESP.getChipId(),HEX);
 
-
+	WiFi.hostname(devName);
 	wifiManager.setConfigPortalTimeout(120);
 	wifiManager.setDebugOutput(false);
 
@@ -41,6 +44,8 @@ void setup()
         wifiManager.startConfigPortal(devName.c_str());
 		Serial.println("Configuration portal closed");
     });
+
+	initWebserver();
 }
 
 
@@ -134,8 +139,34 @@ void loop()
 		inSerial = false;
 	}
 
+    webServer.handleClient();
+
 }
 
+static void initWebserver()
+{
+	webServer.on("/", HTTP_GET,[]()
+	{
+		String msg("<html><head><title>Wifi Thermostat</title></head><body>");
+		msg += "State:<br>";
+		msg += "<pre>";
+		msg += state.toString();
+		msg += "</pre>";
+		
+
+		msg += String("</body></html>");
+		webServer.send(200, "text/html", msg);
+	});
+
+	webServer.onNotFound([]()
+	{
+		//if (!handleFileRead(webServer.uri()))
+			webServer.send(404, "text/plain", "Not Found.");
+	});
+
+	webServer.begin();
+
+}
 
 /*
 

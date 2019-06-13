@@ -418,6 +418,26 @@ public:
 	{
 		wifiConfigCallback = cb;
 	}
+
+	String toString()
+	{
+		String str;
+		str += "Settings 1: ";
+		str += settings1.toString();
+		str += "\n";
+		
+		str += "Settings 2: ";
+		str += settings2.toString();
+		str += "\n";
+
+		for (int i = 0; i < 7; ++i)
+		{
+			str += "Schedule " + String(i+1,DEC) + String(": ");
+			str += schedule[i].toString();
+			str += "\n";
+		}
+		return str;
+	}
 private:
 	C17GH3MessageSettings1Receive settings1;
 	C17GH3MessageSettings2 settings2;
