@@ -34,14 +34,19 @@ void setup()
 	String devName = String("Thermostat-") + String(ESP.getChipId(),HEX);
 
 	WiFi.hostname(devName);
-	wifiManager.setConfigPortalTimeout(120);
-	wifiManager.setDebugOutput(false);
+	WiFi.enableAP(false);
+	WiFi.enableSTA(true);
+	WiFi.begin();
+	wifiManager.setConfigPortalTimeout(10);
+	//wifiManager.setDebugOutput(false);
 
 	Serial.begin(9600);
 
 	state.setWifiConfigCallback([devName]() {
 		Serial.println("Configuration portal opened");
+		webServer.stop();
         wifiManager.startConfigPortal(devName.c_str());
+		webServer.begin();
 		Serial.println("Configuration portal closed");
     });
 
