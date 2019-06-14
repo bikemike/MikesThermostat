@@ -92,21 +92,36 @@ public:
 	}
 };
 
-class C17GH3MessageSettings1Base : public C17GH3MessageBase
+class C17GH3MessageSettings1 : public C17GH3MessageBase
 {
 public:
-	C17GH3MessageSettings1Base()
+	C17GH3MessageSettings1()
 	{
 		type = (uint8_t)MSG_TYPE_SETTINGS1;
 	}
 
-	virtual String toString()
+	virtual String toString(bool sending = false)
 	{
-		return String("Settings1: WifiState: ") + String(getWiFiState()) +
+		String s;
+		s = String("Settings 1: WifiState: ") + String(getWiFiState()) +
 		    String(", SetTemp: ") + String(getSetPointTemp()) +
 		    String(", lock: ") + String(getLock()) + 
 		    String(", mode: ") + String(getMode()) +
 		    String(", power: ") + String(getPower());
+
+		if (sending)
+		{
+			s += 
+			    String(", day: ") + String(getDayOfWeek()) + 
+		    	String(", hour: ") + String(getHour()) + 
+			    String(", minute: ") + String(getMinute());
+		}
+		else
+		{
+ 			s += String(", internal temp: ") + String(getInternalTemperature()) + 
+		    	String(", external temp: ") + String(getExternalTemperature());
+		}
+		return s;
 	}
 
 	enum WIFI_STATE
@@ -164,25 +179,6 @@ public:
 		set_point_temp = (uint8_t)(temperature * 2 + .5f); 
 	}
 
-	uint8_t &wifi_state = bytes[3];  // 00 = start wifi hotspot, 02 = disconnected, 03 = connecting, 04 = disconnecting?, 05 = connected , 06 
-	uint8_t &set_point_temp   = bytes[8];  // 1E 2f 2b 2d = 30 43 47 49
-	uint8_t &unknown1   = bytes[9];  // 00
-	uint8_t &unknown2   = bytes[10]; // 00
-	uint8_t &unknown3   = bytes[11]; // 00
-	uint8_t &lock       = bytes[12]; // lock = ff, unlocked = 00
-	uint8_t &mode       = bytes[13]; // manual = ff, program mode = 00
-	uint8_t &power      = bytes[14]; // thermostat on=1/off=0
-};
-
-class C17GH3MessageSettings1Send : public C17GH3MessageSettings1Base
-{
-public:
-	uint8_t &day_of_week = bytes[4]; // FF = don't set 1-7
-	uint8_t &hour        = bytes[5]; // FF = don't set
-	uint8_t &minute      = bytes[6]; // FF = don't set
-	uint8_t &unknown0    = bytes[7]; // FF = don't set
-	// set unknown1-3 to FF
-
 	uint8_t getDayOfWeek() const
 	{
 		return day_of_week;
@@ -214,27 +210,6 @@ public:
 		minute = m;
 	}
 
-	virtual String toString()
-	{
-		return C17GH3MessageSettings1Base::toString() + 
-		    String(", day: ") + String(getDayOfWeek()) + 
-		    String(", hour: ") + String(getHour()) + 
-		    String(", minute: ") + String(getMinute())
-		;
-	}
-
- 
-};
-
-class C17GH3MessageSettings1Receive: public C17GH3MessageSettings1Base
-{
-public:
-    // temp: 00 F2 == 242 == 24.2, 01 01 == 261 == 26.1
-	uint8_t &temperature_internal_high  = bytes[4];
-	uint8_t &temperature_internal_low   = bytes[5];
-	uint8_t &temperature_external_high  = bytes[6];
-	uint8_t &temperature_external_low   = bytes[7];
-
 	float getInternalTemperature() const
 	{
 		uint32_t temp = temperature_internal_high << 8;
@@ -248,13 +223,28 @@ public:
 		return float(temp) / 10.f;
 	}
 
-	virtual String toString()
-	{
-		return C17GH3MessageSettings1Base::toString() + 
-		    String(", internal temp: ") + String(getInternalTemperature()) + 
-		    String(", external temp: ") + String(getExternalTemperature())
-		;
-	}
+	uint8_t &wifi_state = bytes[3];  // 00 = start wifi hotspot, 02 = disconnected, 03 = connecting, 04 = disconnecting?, 05 = connected , 06
+	
+	// when sending to MCU, the following 4 bytes set the time
+	uint8_t &day_of_week = bytes[4]; // FF = don't set 1-7
+	uint8_t &hour        = bytes[5]; // FF = don't set
+	uint8_t &minute      = bytes[6]; // FF = don't set
+	uint8_t &unknown0    = bytes[7]; // FF = don't set
+
+	// when receiving, the following 4 bytes are internal and external temperature
+    // temp: 00 F2 == 242 == 24.2, 01 01 == 261 == 26.1
+	uint8_t &temperature_internal_high  = bytes[4];
+	uint8_t &temperature_internal_low   = bytes[5];
+	uint8_t &temperature_external_high  = bytes[6];
+	uint8_t &temperature_external_low   = bytes[7];
+
+	uint8_t &set_point_temp   = bytes[8];  // 1E 2f 2b 2d = 30 43 47 49
+	uint8_t &unknown1   = bytes[9];  // 00 ( set unknown1-3 to FF when sending time to mcu)
+	uint8_t &unknown2   = bytes[10]; // 00
+	uint8_t &unknown3   = bytes[11]; // 00
+	uint8_t &lock       = bytes[12]; // lock = ff, unlocked = 00
+	uint8_t &mode       = bytes[13]; // manual = ff, program mode = 00
+	uint8_t &power      = bytes[14]; // thermostat on=1/off=0
 };
 
 
@@ -323,8 +313,8 @@ public:
 
 	virtual String toString()
 	{
-		return String("Settings2: ") +
-		    String(", backlight mode: ") + String(getBacklightMode()) + 
+		return String("Settings 2: ") +
+		    String("backlight mode: ") + String(getBacklightMode()) + 
 		    String(", power mode: ") + String(getPowerMode()) + 
 		    String(", antifreeze mode: ") + String(getAntifreezeMode()) +
 		    String(", sensor mode: ") + String(getSensorMode())
@@ -396,11 +386,15 @@ public:
 	virtual String toString()
 	{
 		String times;
-		for (int i = 0 ; i < 7; ++i)
-			times += String(", time") + String(i+1) + String(": ") + String(getHour(i)) + String(":") + String(getMinute(i)) + 
+		for (int i = 0 ; i < 6; ++i)
+		{
+			if (0 != i)
+				times += ", ";
+			times += String("time") + String(i+1) + String(": ") + String(getHour(i)) + String(":") + String(getMinute(i)) + 
 		    	String(", temp") + String(i+1) + String(": ") + String(getTemperature(0));
+		}
 
-		return String("schedule ") +
+		return String("Schedule ") +
 			String (type-0xC3 + 1) + String(": ") + times;
 		;
 	}
@@ -422,24 +416,29 @@ public:
 	String toString()
 	{
 		String str;
-		str += "Settings 1: ";
-		str += settings1.toString();
-		str += "\n";
+		if (settings1.isValid())
+		{
+			str += settings1.toString();
+			str += "\n";
+		}
 		
-		str += "Settings 2: ";
-		str += settings2.toString();
-		str += "\n";
-
+		if (settings2.isValid())
+		{
+			str += settings2.toString();
+			str += "\n";
+		}
 		for (int i = 0; i < 7; ++i)
 		{
-			str += "Schedule " + String(i+1,DEC) + String(": ");
-			str += schedule[i].toString();
-			str += "\n";
+			if (schedule[i].isValid())
+			{
+				str += schedule[i].toString();
+				str += "\n";
+			}
 		}
 		return str;
 	}
 private:
-	C17GH3MessageSettings1Receive settings1;
+	C17GH3MessageSettings1 settings1;
 	C17GH3MessageSettings2 settings2;
 	C17GH3MessageSchedule schedule[7];
 

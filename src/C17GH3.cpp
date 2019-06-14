@@ -11,9 +11,9 @@ void C17GH3State::processMessage(const C17GH3MessageBase& msg)
 	{
 		case 0xC1:
 		{
-			C17GH3MessageSettings1Base s1msg;
+			C17GH3MessageSettings1 s1msg;
 			s1msg.setBytes(msg.getBytes());
-			if (C17GH3MessageSettings1Base::WIFI_STATE_CONFIG == s1msg.getWiFiState())
+			if (C17GH3MessageSettings1::WIFI_STATE_CONFIG == s1msg.getWiFiState())
 			{
 				// wifi config request
 				Serial.println("WIFI CONFIG REQUEST");
