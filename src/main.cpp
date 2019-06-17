@@ -4,7 +4,6 @@
 #include <ESP8266WiFi.h> 
 #include <ArduinoOTA.h>
 #include <PubSubClient.h>
-#include <ESP8266WebServer.h>
 #include <FS.h>
 #include <DNSServer.h>
 #include <WiFiManager.h>
@@ -12,19 +11,18 @@
 #include <set>
 
 #include "C17GH3.h"
+#include "Webserver.h"
 
 WiFiManager wifiManager;
-ESP8266WebServer webServer(80);
-
 C17GH3MessageBuffer msgBuffer;
 C17GH3State state;
+Webserver webserver;
+
 
 String sBuffer;
 
 bool inSerial = false;
 uint32_t lastMS = 0;
-
-static void initWebserver();
 
 
 wl_status_t wifiStatus = WL_NO_SHIELD;
@@ -32,25 +30,25 @@ wl_status_t wifiStatus = WL_NO_SHIELD;
 void setup()
 {
 	String devName = String("Thermostat-") + String(ESP.getChipId(),HEX);
-
 	WiFi.hostname(devName);
 	WiFi.enableAP(false);
 	WiFi.enableSTA(true);
 	WiFi.begin();
-	wifiManager.setConfigPortalTimeout(10);
-	//wifiManager.setDebugOutput(false);
+	wifiManager.setConfigPortalTimeout(120);
+	wifiManager.setDebugOutput(false);
 
 	Serial.begin(9600);
 
 	state.setWifiConfigCallback([devName]() {
 		Serial.println("Configuration portal opened");
-		webServer.stop();
+		webserver.stop();
         wifiManager.startConfigPortal(devName.c_str());
-		webServer.begin();
+		webserver.start();
+		WiFi.enableAP(false);
 		Serial.println("Configuration portal closed");
     });
 
-	initWebserver();
+	webserver.init(&state);
 }
 
 
@@ -144,33 +142,7 @@ void loop()
 		inSerial = false;
 	}
 
-    webServer.handleClient();
-
-}
-
-static void initWebserver()
-{
-	webServer.on("/", HTTP_GET,[]()
-	{
-		String msg("<html><head><title>Wifi Thermostat</title></head><body>");
-		msg += "State:<br>";
-		msg += "<pre>";
-		msg += state.toString();
-		msg += "</pre>";
-		
-
-		msg += String("</body></html>");
-		webServer.send(200, "text/html", msg);
-	});
-
-	webServer.onNotFound([]()
-	{
-		//if (!handleFileRead(webServer.uri()))
-			webServer.send(404, "text/plain", "Not Found.");
-	});
-
-	webServer.begin();
-
+    webserver.process();
 }
 
 /*
