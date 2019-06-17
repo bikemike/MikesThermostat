@@ -405,7 +405,8 @@ class C17GH3State
 {
 public:
 	//C17GH3State::C17GH3State() {}
-	void processMessage(const C17GH3MessageBase& msg);
+	void processRx(const C17GH3MessageBase& msg);
+	void processTx(){}
 
 	typedef std::function<void()> WifiConfigCallback;
 	void setWifiConfigCallback(WifiConfigCallback cb)

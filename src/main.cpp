@@ -10,6 +10,11 @@
 #include <ArduinoOTA.h>
 #include <ESP8266mDNS.h>
 
+// time includes
+#include <time.h>
+#include <sys/time.h>
+#include <coredecls.h>                  // settimeofday_cb()
+
 #include <set>
 
 #include "C17GH3.h"
@@ -26,10 +31,15 @@ String sBuffer;
 bool inSerial = false;
 uint32_t lastMS = 0;
 
+#define TIMEZONE 	"PST8PDT,M3.2.0,M11.1.0" // FROM https://github.com/nayarsystems/posix_tz_db/blob/master/zones.json
 
 wl_status_t wifiStatus = WL_NO_SHIELD;
 
 static void setupOTA();
+static void initTime();
+static void updateTime();
+
+
 void setup()
 {
 	String devName = String("Thermostat-") + String(ESP.getChipId(),HEX);
@@ -57,6 +67,8 @@ void setup()
 
 	MDNS.begin(devName);
 	MDNS.addService("http", "tcp", 80);
+
+	initTime();
 
 }
 
@@ -128,7 +140,7 @@ void loop()
 				if (hasMsg)
 				{
 					Serial.printf("!! found a message\n");
-					state.processMessage(C17GH3MessageBase(msgBuffer.getBytes()));
+					state.processRx(C17GH3MessageBase(msgBuffer.getBytes()));
 
 				}
 				
@@ -151,8 +163,11 @@ void loop()
 		inSerial = false;
 	}
 
-    webserver.process();
+
+	webserver.process();
 	ArduinoOTA.handle();
+	updateTime();
+}
 
 static void setupOTA()
 {
@@ -182,6 +197,77 @@ static void setupOTA()
 	});
 	ArduinoOTA.begin();
 	MDNS.update();
+}
+
+timeval cbtime;			// when time set callback was called
+int cbtime_set = 0;
+static void timeSet()
+{
+	gettimeofday(&cbtime, NULL);
+	cbtime_set++;
+}
+
+
+timeval tv;
+struct timezone tz;
+time_t tnow;
+
+
+static void updateTime()
+{
+	gettimeofday(&tv, &tz);
+	tnow = time(nullptr);
+
+	// localtime / gmtime every second change
+	static time_t nexttv = 0;
+	if (nexttv < tv.tv_sec && cbtime_set > 1)
+	{
+		nexttv = tv.tv_sec + 3600; // update every hour
+		tm* t  = localtime(&tnow);
+		Serial.printf("H=%d, M=%d, wday=%d\n", t->tm_hour, t->tm_min, t->tm_wday);
+	}
+}
+
+static void initTime()
+{
+
+	// set function to call when time is set
+	// is called by NTP code when NTP is used
+	settimeofday_cb(timeSet);
+
+	// set time from RTC
+	// Normally you would read the RTC to eventually get a current UTC time_t
+	// this is faked for now.
+	time_t rtc_time_t = 1541267183; // fake RTC time for now
+
+	timezone tz = { 0, 0};
+	timeval tv = { rtc_time_t, 0};
+
+	// DO NOT attempt to use the timezone offsets
+	// The timezone offset code is really broken.
+	// if used, then localtime() and gmtime() won't work correctly.
+	// always set the timezone offsets to zero and use a proper TZ string
+	// to get timezone and DST support.
+
+	// set the time of day and explicitly set the timezone offsets to zero
+	// as there appears to be a default offset compiled in that needs to
+	// be set to zero to disable it.
+	settimeofday(&tv, &tz);
+
+
+	// set up TZ string to use a POSIX/gnu TZ string for local timezone
+	// TZ string information:
+	// https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+	setenv("TZ", TIMEZONE, 1);
+
+	tzset(); // save the TZ variable
+
+	// enable NTP by setting up NTP server(s)
+	// up to 3 ntp servers can be specified
+	// configTime(tzoffset, dstflg, "ntp-server1", "ntp-server2", "ntp-server3");
+	// set both timezone offet and dst parameters to zero 
+	// and get real timezone & DST support by using a TZ string
+	configTime(0, 0, "pool.ntp.org");
 }
 
 /*

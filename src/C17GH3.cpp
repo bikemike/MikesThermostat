@@ -1,6 +1,6 @@
 #include "C17GH3.h"
 
-void C17GH3State::processMessage(const C17GH3MessageBase& msg)
+void C17GH3State::processRx(const C17GH3MessageBase& msg)
 {
 	if (!msg.isValid())
 	{
