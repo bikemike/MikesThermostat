@@ -48,3 +48,32 @@ void C17GH3State::processRx(const C17GH3MessageBase& msg)
 		break;
 	}
 }
+
+void C17GH3State::processTx()
+{
+	static uint32_t timeNextSend = 0;
+	static C17GH3MessageBase::C17GH3MessageType msgType = C17GH3MessageBase::MSG_TYPE_SETTINGS1;
+	uint32_t timeNow = millis();
+	if (timeNextSend < timeNow)
+	{
+		timeNextSend = timeNow + 1000; // 1 second
+
+		C17GH3MessageQuery queryMsg(msgType);
+		queryMsg.pack();
+		//Serial.write(queryMsg.getBytes(), 16);
+		
+		Serial.print("TX:");
+		for (int i = 0 ; i < 16; ++i)
+		{
+			Serial.printf(" %02X",queryMsg.getBytes()[i]);
+		}
+		Serial.println();
+
+		
+		if (C17GH3MessageBase::MSG_TYPE_SCHEDULE_DAY7 == msgType)
+			msgType = C17GH3MessageBase::MSG_TYPE_SETTINGS1;
+		else
+			msgType = (C17GH3MessageBase::C17GH3MessageType)(msgType + 1);
+	}
+}
+

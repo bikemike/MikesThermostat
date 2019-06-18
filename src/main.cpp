@@ -167,6 +167,7 @@ void loop()
 	webserver.process();
 	ArduinoOTA.handle();
 	updateTime();
+	state.processTx();
 }
 
 static void setupOTA()

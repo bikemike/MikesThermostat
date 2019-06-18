@@ -35,6 +35,10 @@ public:
 		return String("Msg Type: ") + String(type,HEX);
 	}
 
+	void pack()
+	{
+		setCheckusm();
+	}
 	
 	const uint8_t& magic1 = bytes[0];
 	const uint8_t& magic2 = bytes[1];
@@ -82,6 +86,7 @@ class C17GH3MessageQuery : public C17GH3MessageBase
 public:
 	C17GH3MessageQuery(C17GH3MessageType msgType)
 	{
+		type = MSG_TYPE_QUERY;
 		query = (uint8_t)msgType;
 	}
 	uint8_t &query = bytes[3];
@@ -406,7 +411,7 @@ class C17GH3State
 public:
 	//C17GH3State::C17GH3State() {}
 	void processRx(const C17GH3MessageBase& msg);
-	void processTx(){}
+	void processTx();
 
 	typedef std::function<void()> WifiConfigCallback;
 	void setWifiConfigCallback(WifiConfigCallback cb)
@@ -446,20 +451,6 @@ private:
 	WifiConfigCallback wifiConfigCallback;
 
 };
-
-
-class C17GH3
-{
-	void createQueryMsg();
-	void createSetSettings1Msg();
-	void createSetSettings2Msg();
-	void createSetScheduleMsg();
-	void packMsg(); // checksum
-	void sendMessage();
-	void handleRx();
-
-};
-
 
 class C17GH3MessageBuffer
 {
