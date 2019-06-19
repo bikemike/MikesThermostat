@@ -13,6 +13,7 @@ public:
 
 	void handleRoot();
 	void handleNotFound();
+	void handleConsole();
 	void process();
 private:
 	class ESP8266WebServer* server = nullptr;
