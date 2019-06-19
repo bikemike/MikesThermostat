@@ -19,11 +19,13 @@
 
 #include "C17GH3.h"
 #include "Webserver.h"
+#include "Log.h"
 
 WiFiManager wifiManager;
 C17GH3MessageBuffer msgBuffer;
 C17GH3State state;
 Webserver webserver;
+Log logger;
 
 
 String sBuffer;
@@ -54,12 +56,12 @@ void setup()
 	Serial.begin(9600);
 
 	state.setWifiConfigCallback([devName]() {
-		Serial.println("Configuration portal opened");
+		logger.addLine("Configuration portal opened");
 		webserver.stop();
         wifiManager.startConfigPortal(devName.c_str());
 		webserver.start();
 		WiFi.enableAP(false);
-		Serial.println("Configuration portal closed");
+		logger.addLine("Configuration portal closed");
     });
 
 	webserver.init(&state);
@@ -111,7 +113,7 @@ void loop()
 				break;
 		}
 
-		Serial.println("WiFi Status changed: " + status);
+		logger.addLine("WiFi Status changed: " + status);
 	}
 
 	if (Serial.available())
@@ -119,7 +121,7 @@ void loop()
 		if (!inSerial)
 		{
 			sBuffer = String();
-			Serial.println("Serial data available");
+			logger.addLine("Serial data available");
 		}
 		inSerial = true;
 		while (Serial.available())
@@ -130,7 +132,7 @@ void loop()
 		
 		if (sBuffer.length() == 32)
 		{
-			Serial.println("Got a proper length string");
+			logger.addLine("Got a proper length string");
 			while (sBuffer.length() > 0)
 			{
 				String v = sBuffer.substring(0,2);
@@ -139,20 +141,18 @@ void loop()
 				bool hasMsg = msgBuffer.addbyte(byte);
 				if (hasMsg)
 				{
-					Serial.printf("!! found a message\n");
+					logger.addLine("!! found a message");
 					state.processRx(C17GH3MessageBase(msgBuffer.getBytes()));
 
 				}
 				
 			}
-			//Serial.printf("\n");
 
 			inSerial = false;
 
 		}
 		else
 		{
-			//Serial.printf("Size was %d\n", sBuffer.length());
 		}
 		lastMS = millis();
 	}
@@ -168,36 +168,35 @@ void loop()
 	ArduinoOTA.handle();
 	updateTime();
 	state.processTx();
+	MDNS.update();
+
 }
 
 static void setupOTA()
 {
 	ArduinoOTA.onStart([]() 
 	{
-		Serial.println("OTA Start");
 	});
 	ArduinoOTA.onEnd([]()
 	{
-		Serial.println("OTA End");
-		Serial.println("Rebooting...");
 	});
 
 	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
 	{
-		Serial.printf("Progress: %u%%\r\n", (progress / (total / 100)));
 	});
 	
 	ArduinoOTA.onError([](ota_error_t error)
 	{
+		/*
 		Serial.printf("Error[%u]: ", error);
 		if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
 		else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
 		else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
 		else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
 		else if (error == OTA_END_ERROR) Serial.println("End Failed");
+		*/
 	});
 	ArduinoOTA.begin();
-	MDNS.update();
 }
 
 timeval cbtime;			// when time set callback was called
@@ -225,7 +224,8 @@ static void updateTime()
 	{
 		nexttv = tv.tv_sec + 3600; // update every hour
 		tm* t  = localtime(&tnow);
-		Serial.printf("H=%d, M=%d, wday=%d\n", t->tm_hour, t->tm_min, t->tm_wday);
+		
+		logger.addLine(String("H=") + String(t->tm_hour,DEC) + ", M=" + String(t->tm_min,DEC) + ", wday=" + String(t->tm_wday,DEC));
 	}
 }
 

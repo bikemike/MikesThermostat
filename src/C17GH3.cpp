@@ -1,10 +1,13 @@
 #include "C17GH3.h"
+#include "Log.h"
+
+extern Log logger;
 
 void C17GH3State::processRx(const C17GH3MessageBase& msg)
 {
 	if (!msg.isValid())
 	{
-		Serial.println("ERROR: Invalid MSG");
+		logger.addLine("ERROR: Invalid MSG");
 		return;
 	}
 	switch(msg.type)
@@ -16,7 +19,7 @@ void C17GH3State::processRx(const C17GH3MessageBase& msg)
 			if (C17GH3MessageSettings1::WIFI_STATE_CONFIG == s1msg.getWiFiState())
 			{
 				// wifi config request
-				Serial.println("WIFI CONFIG REQUEST");
+				logger.addLine("WIFI CONFIG REQUEST");
 				if (wifiConfigCallback)
 				{
 					wifiConfigCallback();
@@ -25,13 +28,13 @@ void C17GH3State::processRx(const C17GH3MessageBase& msg)
 			else
 			{	
 				settings1.setBytes(msg.getBytes());
-				Serial.println(settings1.toString());
+				logger.addLine(settings1.toString());
 			}
 		}
 		break;
 		case 0xC2:
 			settings2.setBytes(msg.getBytes());
-			Serial.println(settings2.toString());
+			logger.addLine(settings2.toString());
 		break;
 		case 0xC3:
 		case 0xC4:
@@ -41,10 +44,10 @@ void C17GH3State::processRx(const C17GH3MessageBase& msg)
 		case 0xC8:
 		case 0xC9:
 			schedule[msg.type - 0xC3].setBytes(msg.getBytes());
-			Serial.println(schedule[msg.type - 0xC3].toString());
+			logger.addLine(schedule[msg.type - 0xC3].toString());
 		break;
 		default:
-			Serial.println("MSG Not handled");
+			logger.addLine("MSG Not handled");
 		break;
 	}
 }
@@ -62,12 +65,16 @@ void C17GH3State::processTx()
 		queryMsg.pack();
 		//Serial.write(queryMsg.getBytes(), 16);
 		
-		Serial.print("TX:");
+		String s;
+		s += "TX:";
 		for (int i = 0 ; i < 16; ++i)
 		{
-			Serial.printf(" %02X",queryMsg.getBytes()[i]);
+			s += " ";
+			if (queryMsg.getBytes()[i] < 10)
+				s += "0";
+			s += String(queryMsg.getBytes()[i], HEX);
 		}
-		Serial.println();
+		logger.addLine(s);
 
 		
 		if (C17GH3MessageBase::MSG_TYPE_SCHEDULE_DAY7 == msgType)

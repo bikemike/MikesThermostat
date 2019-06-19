@@ -264,7 +264,7 @@ public:
 	uint8_t &powerMode     = bytes[4];  // 00 = off when powered on, ff == last state of power
 	uint8_t &antifreezeMode= bytes[5];     // 00 = off, ff = on 
 	uint8_t &unknown1      = bytes[6]; // ed = 237 23.7?
-	uint8_t &unknown2      = bytes[7]; // 0a
+	uint8_t &unknown2      = bytes[7]; // 0a = 10 = 5 degrees?
 	uint8_t &unknown3      = bytes[8]; // 1e  = 30 = 15 degrees?
 	uint8_t &unknown4      = bytes[9]; // 00
 	uint8_t &sensorMode    = bytes[10];  // 00 = internal, 01 = external, 02 = both 
