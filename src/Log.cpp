@@ -11,6 +11,21 @@ void Log::addLine(const String& line)
 	}
 }
 
+void Log::addBytes(const String& header, const uint8_t* bytes, uint8_t len)
+{
+	String s;
+	s += header;
+	for (int i = 0 ; i < len; ++i)
+	{
+		s += " ";
+		if (bytes[i] < 10)
+			s += "0";
+		s += String(bytes[i], HEX);
+	}
+	addLine(s);
+}
+
+
 String Log::getLines(uint32_t from_idx) const
 {
 	String lines;

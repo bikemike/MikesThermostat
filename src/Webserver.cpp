@@ -7,7 +7,6 @@
 #include "Log.h"
 
 extern Log logger;
-extern C17GH3MessageBuffer msgBuffer;
 
 void Webserver::init(C17GH3State* state_)
 {
@@ -55,29 +54,26 @@ void Webserver::handleConsole()
 		
 		if (cmd.length() == 32)
 		{
-			logger.addLine("Got a proper length string");
 			while (cmd.length() > 0)
 			{
 				String v = cmd.substring(0,2);
 				cmd = cmd.substring(2);
-				uint8_t byte = (uint8_t)strtol(v.c_str(), nullptr, 16);
-				bool hasMsg = msgBuffer.addbyte(byte);
-				if (hasMsg)
-				{
-					logger.addLine("!! found a message");
-					state->processRx(C17GH3MessageBase(msgBuffer.getBytes()));
-				}
+				state->processRx(strtol(v.c_str(), nullptr, 16));
 			}
 		}
     }
-	String msg("<html><head><title>Wifi Thermostat</title></head><body>");
+	String msg("<html><head><title>Wifi Thermostat</title>");
+	msg += "<script>";
+	msg += "function sb(){ var c = document.getElementById('console');c.scrollTop = c.scrollHeight;}";
+	msg += "</script></head>";
+	msg += "<body onload='sb();'>";
 	msg += "Console:<br>";
 	msg += "<form method='POST'>";
-	msg += "<textarea style='width:700px;height:500px'>";
+	msg += "<textarea id='console' style='width:100%;height:calc(100% - 50px);'>";
 	msg += logger.getLines();
 	msg += "</textarea>";
 	msg += "<br/>";
-	msg += "<input type='text' name='cmd' style='width:600px;'></input><input type=submit value='send' style='width:100px;'></input>";
+	msg += "<input type='text' name='cmd' style='width:calc(100% - 100px);'></input><input type=submit value='send' style='width:100px;'></input>";
 	msg += "</form>";
 	msg += "</body></html>";
 	server->send(200, "text/html", msg);

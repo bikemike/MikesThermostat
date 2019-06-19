@@ -22,13 +22,9 @@
 #include "Log.h"
 
 WiFiManager wifiManager;
-C17GH3MessageBuffer msgBuffer;
 C17GH3State state;
 Webserver webserver;
 Log logger;
-
-
-String sBuffer;
 
 bool inSerial = false;
 uint32_t lastMS = 0;
@@ -116,54 +112,7 @@ void loop()
 		logger.addLine("WiFi Status changed: " + status);
 	}
 
-	if (Serial.available())
-	{
-		if (!inSerial)
-		{
-			sBuffer = String();
-			logger.addLine("Serial data available");
-		}
-		inSerial = true;
-		while (Serial.available())
-		{
-			sBuffer += String((char)Serial.read());
-			sBuffer.trim();
-		}
-		
-		if (sBuffer.length() == 32)
-		{
-			logger.addLine("Got a proper length string");
-			while (sBuffer.length() > 0)
-			{
-				String v = sBuffer.substring(0,2);
-				sBuffer = sBuffer.substring(2);
-				uint8_t byte = (uint8_t)strtol(v.c_str(), nullptr, 16);
-				bool hasMsg = msgBuffer.addbyte(byte);
-				if (hasMsg)
-				{
-					logger.addLine("!! found a message");
-					state.processRx(C17GH3MessageBase(msgBuffer.getBytes()));
-
-				}
-				
-			}
-
-			inSerial = false;
-
-		}
-		else
-		{
-		}
-		lastMS = millis();
-	}
-
-	uint32_t newLast = millis();
-	if (newLast - lastMS > 500)
-	{
-		inSerial = false;
-	}
-
-
+	state.processRx();
 	webserver.process();
 	ArduinoOTA.handle();
 	updateTime();

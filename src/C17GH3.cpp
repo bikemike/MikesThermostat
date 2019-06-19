@@ -3,8 +3,30 @@
 
 extern Log logger;
 
+void C17GH3State::processRx()
+{
+	if (Serial.available())
+	{
+		while (Serial.available())
+		{
+			processRx(Serial.read());
+		}
+	}
+}
+
+void C17GH3State::processRx(int byte)
+{
+	bool hasMsg = msgBuffer.addbyte(byte);
+	if (hasMsg)
+	{
+		processRx(C17GH3MessageBase(msgBuffer.getBytes()));
+	}
+}
+
 void C17GH3State::processRx(const C17GH3MessageBase& msg)
 {
+	logger.addBytes("RX:", msg.getBytes(), 16);
+
 	if (!msg.isValid())
 	{
 		logger.addLine("ERROR: Invalid MSG");
@@ -63,18 +85,9 @@ void C17GH3State::processTx()
 
 		C17GH3MessageQuery queryMsg(msgType);
 		queryMsg.pack();
-		//Serial.write(queryMsg.getBytes(), 16);
+		Serial.write(queryMsg.getBytes(), 16);
 		
-		String s;
-		s += "TX:";
-		for (int i = 0 ; i < 16; ++i)
-		{
-			s += " ";
-			if (queryMsg.getBytes()[i] < 10)
-				s += "0";
-			s += String(queryMsg.getBytes()[i], HEX);
-		}
-		logger.addLine(s);
+		logger.addBytes("TX:", queryMsg.getBytes(), 16);
 
 		
 		if (C17GH3MessageBase::MSG_TYPE_SCHEDULE_DAY7 == msgType)

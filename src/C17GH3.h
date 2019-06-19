@@ -406,52 +406,6 @@ public:
 };
 
 
-class C17GH3State
-{
-public:
-	//C17GH3State::C17GH3State() {}
-	void processRx(const C17GH3MessageBase& msg);
-	void processTx();
-
-	typedef std::function<void()> WifiConfigCallback;
-	void setWifiConfigCallback(WifiConfigCallback cb)
-	{
-		wifiConfigCallback = cb;
-	}
-
-	String toString()
-	{
-		String str;
-		if (settings1.isValid())
-		{
-			str += settings1.toString();
-			str += "\n";
-		}
-		
-		if (settings2.isValid())
-		{
-			str += settings2.toString();
-			str += "\n";
-		}
-		for (int i = 0; i < 7; ++i)
-		{
-			if (schedule[i].isValid())
-			{
-				str += schedule[i].toString();
-				str += "\n";
-			}
-		}
-		return str;
-	}
-private:
-	C17GH3MessageSettings1 settings1;
-	C17GH3MessageSettings2 settings2;
-	C17GH3MessageSchedule schedule[7];
-
-	WifiConfigCallback wifiConfigCallback;
-
-};
-
 class C17GH3MessageBuffer
 {
 public:
@@ -510,6 +464,58 @@ private:
 	uint8_t bytes[16] = {0};
 	uint8_t currentByte = 0;
 	uint32_t lastMS = 0;
+};
+
+
+class C17GH3State
+{
+public:
+	//C17GH3State::C17GH3State() {}
+	void processRx();
+	void processRx(int byte);
+	void processRx(const C17GH3MessageBase& msg);
+	void processTx();
+
+	typedef std::function<void()> WifiConfigCallback;
+	void setWifiConfigCallback(WifiConfigCallback cb)
+	{
+		wifiConfigCallback = cb;
+	}
+
+	String toString()
+	{
+		String str;
+		if (settings1.isValid())
+		{
+			str += settings1.toString();
+			str += "\n";
+		}
+		
+		if (settings2.isValid())
+		{
+			str += settings2.toString();
+			str += "\n";
+		}
+		for (int i = 0; i < 7; ++i)
+		{
+			if (schedule[i].isValid())
+			{
+				str += schedule[i].toString();
+				str += "\n";
+			}
+		}
+		return str;
+	}
+private:
+	C17GH3MessageBuffer msgBuffer;
+
+	C17GH3MessageSettings1 settings1;
+	C17GH3MessageSettings2 settings2;
+	C17GH3MessageSchedule schedule[7];
+
+
+	WifiConfigCallback wifiConfigCallback;
+
 };
 
 #endif
