@@ -52,13 +52,36 @@ void Webserver::handleConsole()
 		cmd.replace(" ","");
 		logger.addLine("Got a post cmd: " + cmd);
 		
-		if (cmd.length() == 32)
+		if (cmd.length() == 35)
 		{
-			while (cmd.length() > 0)
+			if (cmd.startsWith("RX:"))
 			{
-				String v = cmd.substring(0,2);
-				cmd = cmd.substring(2);
-				state->processRx(strtol(v.c_str(), nullptr, 16));
+				cmd = cmd.substring(3);
+				while (cmd.length() > 0)
+				{
+					String v = cmd.substring(0,2);
+					cmd = cmd.substring(2);
+					state->processRx(strtol(v.c_str(), nullptr, 16));
+				}
+			}
+			else if (cmd.startsWith("TX:"))
+			{
+				cmd = cmd.substring(3);
+				C17GH3MessageBuffer buffer;
+				
+				while (cmd.length() > 0)
+				{
+					String v = cmd.substring(0,2);
+					cmd = cmd.substring(2);
+					bool hasMsg = buffer.addbyte(strtol(v.c_str(), nullptr, 16));
+					if (hasMsg)
+					{
+						C17GH3MessageBase msg(buffer.getBytes());
+						msg.pack();
+						state->sendMessage(msg);
+					}
+				}
+
 			}
 		}
     }
