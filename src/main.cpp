@@ -1,6 +1,5 @@
 #include <Arduino.h>
 
-
 #include <ESP8266WiFi.h> 
 #include <ArduinoOTA.h>
 #include <PubSubClient.h>
@@ -31,12 +30,8 @@ uint32_t lastMS = 0;
 
 #define TIMEZONE 	"PST8PDT,M3.2.0,M11.1.0" // FROM https://github.com/nayarsystems/posix_tz_db/blob/master/zones.json
 
-wl_status_t wifiStatus = WL_NO_SHIELD;
-
 static void setupOTA();
 static void initTime();
-static void updateTime();
-
 
 void setup()
 {
@@ -70,53 +65,22 @@ void setup()
 
 }
 
+timeval cbtime;			// when time set callback was called
+int cbtime_set = 0;
+static void timeSet()
+{
+	gettimeofday(&cbtime, NULL);
+	cbtime_set++;
+}
+
+
 
 void loop()
 {
-	
-	if (WiFi.status() != wifiStatus)
-	{
-		wifiStatus = WiFi.status();
-		String status;
-		switch(wifiStatus)
-		{
-			case WL_NO_SHIELD:
-				status = "no shield";
-				break;
-			case WL_IDLE_STATUS:
-				status = "idle";
-				break;
-			case WL_NO_SSID_AVAIL:
-				status = "no ssid available";
-				break;
-			case WL_SCAN_COMPLETED:
-				status = "scan completed";
-				break;
-			case WL_CONNECTED:
-				status = "connected. SSID: ";
-				status += WiFi.SSID();
-				status += ", IP address: ";
-				status += WiFi.localIP().toString();
-				break;
-			case WL_CONNECT_FAILED:
-				status = "connect failed";
-				break;
-			case WL_CONNECTION_LOST:
-				status = "connection lost";
-				break;
-			case WL_DISCONNECTED:
-				status = "disconnected";
-				break;
-		}
-
-		logger.addLine("WiFi Status changed: " + status);
-	}
-
 	state.processRx();
 	webserver.process();
 	ArduinoOTA.handle();
-	updateTime();
-	state.processTx();
+	state.processTx(cbtime_set > 1);
 	MDNS.update();
 
 }
@@ -148,35 +112,7 @@ static void setupOTA()
 	ArduinoOTA.begin();
 }
 
-timeval cbtime;			// when time set callback was called
-int cbtime_set = 0;
-static void timeSet()
-{
-	gettimeofday(&cbtime, NULL);
-	cbtime_set++;
-}
 
-
-timeval tv;
-struct timezone tz;
-time_t tnow;
-
-
-static void updateTime()
-{
-	gettimeofday(&tv, &tz);
-	tnow = time(nullptr);
-
-	// localtime / gmtime every second change
-	static time_t nexttv = 0;
-	if (nexttv < tv.tv_sec && cbtime_set > 1)
-	{
-		nexttv = tv.tv_sec + 3600; // update every hour
-		tm* t  = localtime(&tnow);
-		
-		logger.addLine(String("H=") + String(t->tm_hour,DEC) + ", M=" + String(t->tm_min,DEC) + ", wday=" + String(t->tm_wday,DEC));
-	}
-}
 
 static void initTime()
 {

@@ -15,6 +15,16 @@ public:
 	}
 	virtual ~C17GH3MessageBase(){}
 
+	bool operator==(C17GH3MessageBase& other)
+	{
+		for (int i = 0; i < 16; ++i)
+		{
+			if (bytes[i] != other.bytes[i])
+				return false;
+		}
+		return true;
+	}
+
 	void setBytes(const uint8_t* srcbytes)
 	{
 		memcpy(bytes, srcbytes, 16);
@@ -129,7 +139,7 @@ public:
 		return s;
 	}
 
-	enum WIFI_STATE
+	enum WiFiState
 	{
 		WIFI_STATE_CONFIG,
 		WIFI_STATE_UNKNOWN1,
@@ -140,13 +150,13 @@ public:
 		WIFI_STATE_UNKNOWN2
 	};
 
-	void setWiFiState(WIFI_STATE state)
+	void setWiFiState(WiFiState state)
 	{
 		wifi_state = (uint8_t)state;
 	}
-	WIFI_STATE getWiFiState() const
+	WiFiState getWiFiState() const
 	{
-		return (WIFI_STATE)wifi_state;
+		return (WiFiState)wifi_state;
 	}
 
 	bool getLock() const
@@ -159,7 +169,7 @@ public:
 	}
 	bool getMode() const
 	{
-		return 0xFF == mode;
+		return 0 != mode;
 	}
 	void setMode(bool mode_) 
 	{
@@ -167,7 +177,7 @@ public:
 	}
 	bool getPower() const
 	{
-		return 1 == power;
+		return 0 != power;
 	}
 	void setPower(bool pow) 
 	{
@@ -192,6 +202,8 @@ public:
 	{
 		if (dow > 7)
 			dow = 7;
+		if (dow < 1)
+			dow = 1;
 		day_of_week = dow;
 	}
 	uint8_t getHour() const
@@ -215,6 +227,20 @@ public:
 		minute = m;
 	}
 
+	void setTxFields(bool hasTime)
+	{
+		if (!hasTime)
+		{
+			day_of_week = 0xff;
+			hour = 0xff;
+			minute = 0xff;
+		}
+		unknown7   = 0xff;
+		unknown9  = 0xff;
+		unknown10 = 0xff;
+		unknown11 = 0xff;
+	}
+
 	float getInternalTemperature() const
 	{
 		uint32_t temp = temperature_internal_high << 8;
@@ -234,7 +260,7 @@ public:
 	uint8_t &day_of_week = bytes[4]; // FF = don't set 1-7
 	uint8_t &hour        = bytes[5]; // FF = don't set
 	uint8_t &minute      = bytes[6]; // FF = don't set
-	uint8_t &unknown0    = bytes[7]; // FF = don't set
+	uint8_t &unknown7    = bytes[7];  // FF = don't set
 
 	// when receiving, the following 4 bytes are internal and external temperature
     // temp: 00 F2 == 242 == 24.2, 01 01 == 261 == 26.1
@@ -244,9 +270,9 @@ public:
 	uint8_t &temperature_external_low   = bytes[7];
 
 	uint8_t &set_point_temp   = bytes[8];  // 1E 2f 2b 2d = 30 43 47 49
-	uint8_t &unknown1   = bytes[9];  // 00 ( set unknown1-3 to FF when sending time to mcu)
-	uint8_t &unknown2   = bytes[10]; // 00
-	uint8_t &unknown3   = bytes[11]; // 00
+	uint8_t &unknown9   = bytes[9];  // 00 ( set unknown1-3 to FF when sending time/wifistate to mcu)
+	uint8_t &unknown10   = bytes[10]; // 00
+	uint8_t &unknown11   = bytes[11]; // 00
 	uint8_t &lock       = bytes[12]; // lock = ff, unlocked = 00
 	uint8_t &mode       = bytes[13]; // manual = ff, program mode = 00
 	uint8_t &power      = bytes[14]; // thermostat on=1/off=0
@@ -260,19 +286,30 @@ public:
 	{
 		type = (uint8_t)MSG_TYPE_SETTINGS2;
 	}
-	uint8_t &backlightMode = bytes[3];  // 00 = autooff, ff = steady on
-	uint8_t &powerMode     = bytes[4];  // 00 = off when powered on, ff == last state of power
-	uint8_t &antifreezeMode= bytes[5];     // 00 = off, ff = on 
-	uint8_t &unknown1      = bytes[6]; // ed = 237 23.7?
-	uint8_t &unknown2      = bytes[7]; // 0a = 10 = 5 degrees?
-	uint8_t &unknown3      = bytes[8]; // 1e  = 30 = 15 degrees?
-	uint8_t &unknown4      = bytes[9]; // 00
-	uint8_t &sensorMode    = bytes[10];  // 00 = internal, 01 = external, 02 = both 
-	uint8_t &unknown5      = bytes[11]; // 37 = 55 - therm max? or 27.5?
-	uint8_t &unknown6      = bytes[12]; // 00
-	uint8_t &unknown7      = bytes[13]; // 00 // ff - 03
-	uint8_t &unknown8      = bytes[14]; // 01
+	uint8_t &backlightMode       = bytes[3];  // 00 = autooff, ff = steady on
+	uint8_t &powerMode           = bytes[4];  // 00 = off when powered on, ff == last state of power
+	uint8_t &antifreezeMode      = bytes[5];     // 00 = off, ff = on 
+	uint8_t &tempCorrection      = bytes[6]; // -5 to +5, default -2
+	uint8_t &internalHysteresis  = bytes[7]; // 0x32 = 50 = 5 degrees , .5 to 5 degrees, .5 increments
+	uint8_t &externalHysteresis  = bytes[8]; // 1e  = 30 = 3.0 degrees
+	uint8_t &unknown9            = bytes[9]; // 00
+	uint8_t &sensorMode          = bytes[10];  // 00 = internal, 01 = external, 02 = both 
+	uint8_t &externalSensorLimit = bytes[11]; // 40-80degrees. default 55
+	uint8_t &unknown12           = bytes[12]; // 00
+	uint8_t &unknown13           = bytes[13]; // 00 // ff - 03
+	uint8_t &unknown14           = bytes[14]; // 01
 
+	// TEMPERATURE CORRECTION -5 to 5 degrees (default -2)
+	// could be : (unknown2, unknown4, unknown6, unknown7, unknown8) 
+	
+	//dt0 internal sensor hysteresis .5 to 4 degrees (default 1 )
+	// could be : (unknown8) 
+	
+	//dt1 external sensor hysteresis .5 to 5 degrees (default 3)
+	// could be : (unknown2, unknown8)
+
+	// external temperature sensor limit 40 to 80 degrees (default 55) (all or external
+	// could be : (unknown5)
 	enum SensorMode
 	{
 		SENSOR_MODE_INTERNAL,
@@ -282,7 +319,7 @@ public:
 
 	bool getBacklightMode() const
 	{
-		return 0xFF == backlightMode;
+		return 0 != backlightMode;
 	}
 	void setBacklightMode(bool bl)
 	{
@@ -291,7 +328,7 @@ public:
 
 	bool getPowerMode() const
 	{
-		return 0xFF == powerMode;
+		return 0 != powerMode;
 	}
 	void setPowerMode(bool pm)
 	{
@@ -300,9 +337,9 @@ public:
 
 	bool getAntifreezeMode() const
 	{
-		return 0xFF == antifreezeMode;
+		return 0 != antifreezeMode;
 	}
-	void setAntifreeze(bool am)
+	void setAntifreezeMode(bool am)
 	{
 		antifreezeMode = am ? 0xFF : 0;
 	}
@@ -316,13 +353,67 @@ public:
 		sensorMode = (uint8_t)sm;
 	}
 
+	float getTemperatureCorrection() const
+	{
+		return int8_t(tempCorrection) / 10.f;
+	}
+
+	void setTemperatureCorrection(float val)
+	{
+		if (val > 5.f)
+			val = 5.f;
+		if (val < -5.f)
+			val = -5.f;
+
+		tempCorrection = int8_t(val*10);
+	}
+
+	float getInternalHysteresis() const
+	{
+		return internalHysteresis / 10.f;
+	}
+
+	void setInternalHysteresis(float val) 
+	{
+		internalHysteresis = uint8_t(val * 10);
+	}
+
+	float getExternalHysteresis() const
+	{
+		return externalHysteresis / 10.f;
+	}
+
+	void setExternalHysteresis(float val)
+	{
+		externalHysteresis = uint8_t(val * 10);
+	}
+
+	uint8_t getExternalSensorLimit() const
+	{
+		return externalSensorLimit;
+	}
+
+	void setExternalSensorLimit(uint8_t limit)
+	{
+		if (limit < 40)
+			limit = 40;
+		if (limit > 80)
+			limit = 80;
+
+		externalSensorLimit = limit;
+	}
+
 	virtual String toString()
 	{
 		return String("Settings 2: ") +
 		    String("backlight mode: ") + String(getBacklightMode()) + 
 		    String(", power mode: ") + String(getPowerMode()) + 
 		    String(", antifreeze mode: ") + String(getAntifreezeMode()) +
-		    String(", sensor mode: ") + String(getSensorMode())
+		    String(", sensor mode: ") + String(getSensorMode()) +
+		    String(", temp correct: ") + String(getTemperatureCorrection()) +
+		    String(", int hyst: ") + String(getInternalHysteresis()) +
+		    String(", ext hist: ") + String(getExternalHysteresis()) +
+		    String(", ext limit: ") + String(getExternalSensorLimit())
 		;
 	}
 };
@@ -371,7 +462,7 @@ public:
 		if (idx > 5)
 			idx = 5;
 		
-		return bytes[3 + idx * 2] - bytes[3 + idx * 2]/10 * 10 ;
+		return (bytes[3 + idx * 2] - bytes[3 + idx * 2]/10 * 10)*10;
 	}
 
 	uint8_t getTemperature(uint8_t idx) const
@@ -470,11 +561,39 @@ private:
 class C17GH3State
 {
 public:
+
+	C17GH3MessageSettings1::WiFiState getWiFiState() const;
+	bool getLock() const;
+	void setLock(bool locked); 
+	bool getMode() const;
+	void setMode(bool mode_); 
+	bool getPower() const;
+	void setPower(bool pow) ;
+	float getSetPointTemp() const;
+	void setSetPointTemp(float temperature);
+	float getInternalTemperature() const;
+	float getExternalTemperature() const;
+
+	bool getBacklightMode() const;
+	void setBacklightMode(bool bl);
+	bool getPowerMode() const;
+	void setPowerMode(bool pm);
+	bool getAntifreezeMode() const;
+	void setAntifreezeMode(bool am);
+	C17GH3MessageSettings2::SensorMode getSensorMode() const;
+	void setSensorMode(C17GH3MessageSettings2::SensorMode sm);
+
+
+
+
+
 	//C17GH3State::C17GH3State() {}
 	void processRx();
 	void processRx(int byte);
 	void processRx(const C17GH3MessageBase& msg);
-	void processTx();
+	void processTx(bool timeAvailable = false) const;
+	void sendMessage(const C17GH3MessageBase& msg) const;
+
 
 	typedef std::function<void()> WifiConfigCallback;
 	void setWifiConfigCallback(WifiConfigCallback cb)
@@ -507,14 +626,18 @@ public:
 		return str;
 	}
 private:
+	bool isValidState(const C17GH3MessageBase::C17GH3MessageType &msgType) const;
+	void sendSettings1(bool timeAvailable = false) const;
+	void sendSettings2() const;
+
 	C17GH3MessageBuffer msgBuffer;
 
 	C17GH3MessageSettings1 settings1;
 	C17GH3MessageSettings2 settings2;
 	C17GH3MessageSchedule schedule[7];
 
-
 	WifiConfigCallback wifiConfigCallback;
+	mutable bool firstQueriesDone = false;
 
 };
 
