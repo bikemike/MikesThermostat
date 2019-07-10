@@ -211,6 +211,18 @@ C17GH3MessageSettings1::WiFiState C17GH3State::getWiFiState() const
 	return settings1.getWiFiState();
 }
 
+bool C17GH3State::getIsHeating() const
+{
+	return isHeating;
+}
+void C17GH3State::setIsHeating(bool heating)
+{
+	if (isHeating != heating)
+	{
+		isHeating = heating; 
+	}
+}
+
 bool C17GH3State::getLock() const
 {
 	return settings1.getLock();

@@ -24,14 +24,18 @@ WiFiManager wifiManager;
 C17GH3State state;
 Webserver webserver;
 Log logger;
-
-bool inSerial = false;
-uint32_t lastMS = 0;
+bool relayOn = false;
 
 #define TIMEZONE 	"PST8PDT,M3.2.0,M11.1.0" // FROM https://github.com/nayarsystems/posix_tz_db/blob/master/zones.json
 
 static void setupOTA();
 static void initTime();
+static void ICACHE_RAM_ATTR handleRelayMonitorInterrupt();
+
+#define PIN_RELAY_MONITOR D1
+#define PIN_RELAY2        D2
+
+
 
 void setup()
 {
@@ -62,6 +66,16 @@ void setup()
 	MDNS.addService("http", "tcp", 80);
 
 	initTime();
+#ifdef PIN_RELAY_MONITOR
+	pinMode(PIN_RELAY_MONITOR, INPUT);
+	attachInterrupt(digitalPinToInterrupt(PIN_RELAY_MONITOR), handleRelayMonitorInterrupt, CHANGE);
+	relayOn = digitalRead(PIN_RELAY_MONITOR);
+	state.setIsHeating(relayOn);
+#endif
+#ifdef PIN_RELAY2
+	pinMode(PIN_RELAY2, OUTPUT);
+	digitalWrite(PIN_RELAY2, LOW); 	
+#endif
 
 }
 
@@ -77,6 +91,7 @@ static void timeSet()
 
 void loop()
 {
+	state.setIsHeating(relayOn);
 	state.processRx();
 	webserver.process();
 	ArduinoOTA.handle();
@@ -154,6 +169,12 @@ static void initTime()
 	// set both timezone offet and dst parameters to zero 
 	// and get real timezone & DST support by using a TZ string
 	configTime(0, 0, "pool.ntp.org");
+}
+
+
+static void ICACHE_RAM_ATTR handleRelayMonitorInterrupt()
+{
+	relayOn = digitalRead(PIN_RELAY_MONITOR);
 }
 
 /*

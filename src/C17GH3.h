@@ -563,6 +563,8 @@ class C17GH3State
 public:
 
 	C17GH3MessageSettings1::WiFiState getWiFiState() const;
+	bool getIsHeating() const;
+	void setIsHeating(bool heating);
 	bool getLock() const;
 	void setLock(bool locked); 
 	bool getMode() const;
@@ -604,6 +606,11 @@ public:
 	String toString()
 	{
 		String str;
+		str += "HEATING: ";
+		if (getIsHeating())
+			str  += "ON\n";
+		else
+			str += "OFF\n";
 		if (settings1.isValid())
 		{
 			str += settings1.toString();
@@ -638,6 +645,7 @@ private:
 
 	WifiConfigCallback wifiConfigCallback;
 	mutable bool firstQueriesDone = false;
+	bool isHeating = false;
 
 };
 
