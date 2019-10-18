@@ -1,13 +1,14 @@
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
+#include "ThermostatState.h"
 
 
-class Webserver
+class Webserver : public ThermostatState::Listener
 {
 public:
 	Webserver() {}
-	void init(class C17GH3State* state);
+	void init(class ThermostatState* state, String deviceName);
 	void stop();
 	void start();
 
@@ -15,9 +16,13 @@ public:
 	void handleNotFound();
 	void handleConsole();
 	void process();
+
+	virtual void handleThermostatStateChange(const ThermostatState::ChangeEvent& c) override;
+
 private:
+	String deviceName;
 	class ESP8266WebServer* server = nullptr;
-	class C17GH3State* state = nullptr;
+	class ThermostatState* state = nullptr;
 	class ESP8266HTTPUpdateServer* httpUpdater = nullptr;
 
 };
