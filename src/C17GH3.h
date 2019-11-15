@@ -2,9 +2,10 @@
 #define C17GH3_H
 
 #include <Arduino.h>
+#include "ThermostatState.h"
 
 
-class C17GH3MessageBase
+class C17GH3MessageBase : public MessageInterface
 {
 public:
 	C17GH3MessageBase(){}
@@ -13,9 +14,15 @@ public:
 	{
 		memcpy(bytes,_bytes,16);
 	}
+
+	C17GH3MessageBase(const C17GH3MessageBase& other)
+	{
+		*this = other;
+	}
+
 	virtual ~C17GH3MessageBase(){}
 
-	bool operator==(C17GH3MessageBase& other)
+	bool operator==(const C17GH3MessageBase& other) const
 	{
 		for (int i = 0; i < 16; ++i)
 		{
@@ -24,18 +31,35 @@ public:
 		}
 		return true;
 	}
+	
+	void operator=(const C17GH3MessageBase& other)
+	{
+		memcpy(bytes,other.bytes,16);
+	}
 
-	void setBytes(const uint8_t* srcbytes)
+	bool operator<(const C17GH3MessageBase& other) const
+	{
+		return type < other.type;
+	}
+
+
+
+	virtual uint32_t getLength() const override
+	{
+		return 16;
+	}
+
+	virtual void setBytes(const uint8_t* srcbytes)
 	{
 		memcpy(bytes, srcbytes, 16);
 	}
 
-	const uint8_t* getBytes() const
+	virtual const uint8_t* getBytes() const override
 	{
 		return bytes;
 	}
 
-	bool isValid() const
+	virtual bool isValid() const override
 	{
 		return (magic1 == 0xaa && magic2 == 0x55 && calcChecksum() == checksum);
 	}
@@ -99,6 +123,16 @@ public:
 		type = MSG_TYPE_QUERY;
 		query = (uint8_t)msgType;
 	}
+
+	C17GH3MessageQuery(const C17GH3MessageQuery& other)
+	{
+		*this = other;
+	}
+	void operator=(const C17GH3MessageQuery& other)
+	{
+		C17GH3MessageBase::operator=(other);
+	}
+
 	uint8_t &query = bytes[3];
 
 	virtual String toString()
@@ -113,6 +147,14 @@ public:
 	C17GH3MessageSettings1()
 	{
 		type = (uint8_t)MSG_TYPE_SETTINGS1;
+	}
+	C17GH3MessageSettings1(const C17GH3MessageSettings1& other)
+	{
+		*this = other;
+	}
+	void operator=(const C17GH3MessageSettings1& other)
+	{
+		C17GH3MessageBase::operator=(other);
 	}
 
 	virtual String toString(bool sending = false)
@@ -286,8 +328,17 @@ public:
 	{
 		type = (uint8_t)MSG_TYPE_SETTINGS2;
 	}
+	C17GH3MessageSettings2(const C17GH3MessageSettings2& other)
+	{
+		*this = other;
+	}
+	void operator=(const C17GH3MessageSettings2& other)
+	{
+		C17GH3MessageBase::operator=(other);
+	}
+
 	uint8_t &backlightMode       = bytes[3];  // 00 = autooff, ff = steady on
-	uint8_t &powerMode           = bytes[4];  // 00 = off when powered on, ff == last state of power
+	uint8_t &powerOnMode         = bytes[4];  // 00 = off when powered on, ff == last state of power
 	uint8_t &antifreezeMode      = bytes[5];     // 00 = off, ff = on 
 	uint8_t &tempCorrection      = bytes[6]; // -5 to +5, default -2
 	uint8_t &internalHysteresis  = bytes[7]; // 0x32 = 50 = 5 degrees , .5 to 5 degrees, .5 increments
@@ -326,13 +377,13 @@ public:
 		backlightMode = bl ? 0xFF : 0;
 	}
 
-	bool getPowerMode() const
+	bool getPowerOnMode() const
 	{
-		return 0 != powerMode;
+		return 0 != powerOnMode;
 	}
-	void setPowerMode(bool pm)
+	void setPowerOnMode(bool pm)
 	{
-		powerMode = pm ? 0xFF : 0;
+		powerOnMode = pm ? 0xFF : 0;
 	}
 
 	bool getAntifreezeMode() const
@@ -407,7 +458,7 @@ public:
 	{
 		return String("Settings 2: ") +
 		    String("backlight mode: ") + String(getBacklightMode()) + 
-		    String(", power mode: ") + String(getPowerMode()) + 
+		    String(", power on mode: ") + String(getPowerOnMode()) + 
 		    String(", antifreeze mode: ") + String(getAntifreezeMode()) +
 		    String(", sensor mode: ") + String(getSensorMode()) +
 		    String(", temp correct: ") + String(getTemperatureCorrection()) +
@@ -427,6 +478,18 @@ public:
 	{
 		type = (uint8_t)MSG_TYPE_SCHEDULE_DAY1 + day;
 	}
+
+	C17GH3MessageSchedule(const C17GH3MessageSchedule& other)
+	{
+		*this = other;
+	}
+
+	void operator=(const C17GH3MessageSchedule& other)
+	{
+		C17GH3MessageBase::operator=(other);
+	}
+
+	
 	uint8_t &time1         = bytes[3];  // 60 = 6am, 61 = 6:10am
 	uint8_t &temperature1  = bytes[4];  // 10 = 5 degrees
 	uint8_t &time2         = bytes[5];  // 60 = 6am
@@ -487,7 +550,7 @@ public:
 			if (0 != i)
 				times += ", ";
 			times += String("time") + String(i+1) + String(": ") + String(getHour(i)) + String(":") + String(getMinute(i)) + 
-		    	String(", temp") + String(i+1) + String(": ") + String(getTemperature(0));
+		    	String(", temp") + String(i+1) + String(": ") + String(getTemperature(i));
 		}
 
 		return String("Schedule ") +
@@ -558,43 +621,49 @@ private:
 };
 
 
-class C17GH3State
+class C17GH3State : public ThermostatState
 {
 public:
 
 	C17GH3MessageSettings1::WiFiState getWiFiState() const;
-	bool getIsHeating() const;
-	void setIsHeating(bool heating);
-	bool getLock() const;
-	void setLock(bool locked); 
-	bool getMode() const;
-	void setMode(bool mode_); 
-	bool getPower() const;
-	void setPower(bool pow) ;
-	float getSetPointTemp() const;
-	void setSetPointTemp(float temperature);
-	float getInternalTemperature() const;
-	float getExternalTemperature() const;
+	virtual int getPWM() const;
+	virtual void setPWM(int pwm);
+	virtual bool getLock() const override;
+	virtual void setLock(bool locked, bool updateMCU = false) override; 
+	virtual Mode getMode() const override;
+	virtual void setMode(Mode mode_, bool updateMCU = false) override; 
+	virtual bool getPower() const override;
+	virtual void setPower(bool pow, bool updateMCU = false)  override;
+	virtual float getSetPointTemp() const override;
+	virtual void setSetPointTemp(float temperature, bool updateMCU = false) override;
+	virtual float getInternalTemp() const override;
+	virtual float getExternalTemp() const override;
 
-	bool getBacklightMode() const;
-	void setBacklightMode(bool bl);
-	bool getPowerMode() const;
-	void setPowerMode(bool pm);
-	bool getAntifreezeMode() const;
-	void setAntifreezeMode(bool am);
-	C17GH3MessageSettings2::SensorMode getSensorMode() const;
-	void setSensorMode(C17GH3MessageSettings2::SensorMode sm);
+	virtual bool getBacklightMode() const ;
+	virtual void setBacklightMode(bool bl, bool updateMCU) ;
+	virtual bool getPowerOnMode() const ;
+	virtual void setPowerOnMode(bool pm, bool updateMCU = false) ;
+	virtual bool getAntifreezeMode() const ;
+	virtual void setAntifreezeMode(bool am, bool updateMCU = false) ;
+	virtual C17GH3MessageSettings2::SensorMode getSensorMode() const;
+	virtual void setSensorMode(C17GH3MessageSettings2::SensorMode sm);
 
+	virtual void setSchedule(const uint8_t* schedule, uint8_t length, bool updateMCU = false) override{}
 
-
+	virtual int getScheduleDay() const;
+	virtual int getSchedulePeriod() const;
+	virtual float getScheduleCurrentPeriodSetPointTemp() const;
+	virtual float getScheduleSetPointTemperature(int day, int period) const;
 
 
 	//C17GH3State::C17GH3State() {}
-	void processRx();
-	void processRx(int byte);
-	void processRx(const C17GH3MessageBase& msg);
-	void processTx(bool timeAvailable = false) const;
-	void sendMessage(const C17GH3MessageBase& msg) const;
+	virtual void loop();
+
+	virtual void processRx() override;
+	virtual void processRx(int byte) override;
+	virtual void processRx(const C17GH3MessageBase& msg);
+	virtual void processTx(bool timeAvailable = false) override;
+	virtual void sendMessage(const MessageInterface& msg) const override;
 
 
 	typedef std::function<void()> WifiConfigCallback;
@@ -603,7 +672,7 @@ public:
 		wifiConfigCallback = cb;
 	}
 
-	String toString()
+	virtual String toString() override
 	{
 		String str;
 		str += "HEATING: ";
@@ -611,6 +680,8 @@ public:
 			str  += "ON\n";
 		else
 			str += "OFF\n";
+		str += "PWM: " + String(pwm);
+		str += "\n";
 		if (settings1.isValid())
 		{
 			str += settings1.toString();
@@ -630,8 +701,18 @@ public:
 				str += "\n";
 			}
 		}
+		str += "curr day:";
+		str += String(scheduleCurrentDay);
+		str += ", curr period:";
+		str += String(scheduleCurrentPeriod);
+		str += ", curr temp:";
+		str += String(getScheduleCurrentPeriodSetPointTemp());
 		return str;
 	}
+protected:
+	virtual void setInternalTemp(float temp){} // not needed, stored in settings1
+	virtual void setExternalTemp(float temp){} // not needed, stored in settings1
+
 private:
 	bool isValidState(const C17GH3MessageBase::C17GH3MessageType &msgType) const;
 	void sendSettings1(bool timeAvailable = false) const;
@@ -645,8 +726,14 @@ private:
 
 	WifiConfigCallback wifiConfigCallback;
 	mutable bool firstQueriesDone = false;
-	bool isHeating = false;
+	int pwm = 100;
 
+	mutable std::set<C17GH3MessageBase> pendingMessages;
+	void sendMessages();
+
+	bool haveSchedule = false;
+	int scheduleCurrentDay = -1;
+	int scheduleCurrentPeriod = -1;
 };
 
 #endif

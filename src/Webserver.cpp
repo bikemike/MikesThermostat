@@ -3,14 +3,19 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
 
+#ifdef BHT002GBLW
+#include "BHT002.h"
+#else
 #include "C17GH3.h"
+#endif
 #include "Log.h"
 
 extern Log logger;
 
-void Webserver::init(C17GH3State* state_)
+void Webserver::init(ThermostatState* state_, String devName)
 {
 	state = state_;
+	deviceName = devName;
 	server = new ESP8266WebServer(80);
 	httpUpdater = new ESP8266HTTPUpdateServer();
 
@@ -21,13 +26,15 @@ void Webserver::init(C17GH3State* state_)
 	server->begin();
 
 	httpUpdater->setup(server);
+	state->addListener(this);
 }
 
 void Webserver::handleRoot()
 {
 
 	String msg("<html><head><title>Wifi Thermostat</title></head><body>");
-	msg += "State:<br>";
+	msg += deviceName;
+	msg += " State:<br>";
 	msg += "<pre>";
 	msg += state->toString();
 	msg += "</pre>";
@@ -52,7 +59,7 @@ void Webserver::handleConsole()
 		cmd.replace(" ","");
 		logger.addLine("Got a post cmd: " + cmd);
 		
-		if (cmd.length() == 35)
+		//if (cmd.length() == 35)
 		{
 			if (cmd.startsWith("RX:"))
 			{
@@ -67,8 +74,11 @@ void Webserver::handleConsole()
 			else if (cmd.startsWith("TX:"))
 			{
 				cmd = cmd.substring(3);
+#ifdef BHT002GBLW
+				TUYAMessageBuffer buffer;
+#else
 				C17GH3MessageBuffer buffer;
-				
+#endif
 				while (cmd.length() > 0)
 				{
 					String v = cmd.substring(0,2);
@@ -76,7 +86,12 @@ void Webserver::handleConsole()
 					bool hasMsg = buffer.addbyte(strtol(v.c_str(), nullptr, 16));
 					if (hasMsg)
 					{
+#ifdef BHT002GBLW
+						TUYAMessage msg(buffer.getBytes(), buffer.getLength());
+#else
 						C17GH3MessageBase msg(buffer.getBytes());
+#endif
+
 						msg.pack();
 						state->sendMessage(msg);
 					}
@@ -117,3 +132,32 @@ void Webserver::process()
 {
 	server->handleClient();
 }
+
+void Webserver::handleThermostatStateChange(const ThermostatState::ChangeEvent& c)
+{
+	switch(c.getType())
+	{
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_POWER:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_MODE:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_ECONOMY:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_SETPOINT_TEMP:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_INTERNAL_TEMP:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_EXTERNAL_TEMP:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_IS_HEATING:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_SCHEDULE:
+		break;
+	case ThermostatState::ChangeEvent::CHANGE_TYPE_LOCK:
+		break;
+	default:
+		break;
+	}
+}
+
+
