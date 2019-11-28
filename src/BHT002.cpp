@@ -526,7 +526,7 @@ void TUYAThermostatState::setMode(const Mode m, bool updateMCU)
 		{
 			// send change to mcu
 			TUYAMessage msg(TUYAMessage::MSG_CMD_DP_CMD);
-			uint8_t payload[5] = {0x04, 0x01, 0x00, 0x01, mode};
+			uint8_t payload[5] = {0x04, 0x04, 0x00, 0x01, mode};
 			msg.setPayload(payload, 5);
 			msg.pack();
 			sendMessage(msg);
