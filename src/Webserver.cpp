@@ -22,6 +22,7 @@ void Webserver::init(ThermostatState* state_, String devName)
 	server->on("/", HTTP_GET,std::bind(&Webserver::handleRoot, this));
 	server->on("/console", HTTP_GET,std::bind(&Webserver::handleConsole, this));
 	server->on("/console", HTTP_POST,std::bind(&Webserver::handleConsole, this));
+	server->on("/restart", HTTP_GET, std::bind(&Webserver::handleRestart, this)); 
 	server->onNotFound(std::bind(&Webserver::handleRoot, this));
 	server->begin();
 
@@ -115,6 +116,12 @@ void Webserver::handleConsole()
 	msg += "</form>";
 	msg += "</body></html>";
 	server->send(200, "text/html", msg);
+}
+
+void Webserver::handleRestart()
+{
+	ESP.restart();
+	delay(10000);
 }
 
 void Webserver::start()

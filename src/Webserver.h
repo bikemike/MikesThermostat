@@ -15,6 +15,7 @@ public:
 	void handleRoot();
 	void handleNotFound();
 	void handleConsole();
+	void handleRestart();
 	void process();
 
 	virtual void handleThermostatStateChange(const ThermostatState::ChangeEvent& c) override;
