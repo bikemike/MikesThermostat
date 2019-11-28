@@ -433,13 +433,13 @@ void TUYAThermostatState::sendTime(bool timeAvailable) const
 	if (new_time != nullptr)
 	{
 		// weekday: 0 = monday, 6 = sunday
-		uint8_t w = (new_time->tm_wday == 0 ? 7 : new_time->tm_wday) - 1;
+		uint8_t w = (new_time->tm_wday == 0 ? 7 : new_time->tm_wday);
 		uint8_t s = new_time->tm_sec;
 		uint8_t m = new_time->tm_min;
-		uint8_t h = new_time->tm_sec;
-		uint8_t d = new_time->tm_mday + 1;
+		uint8_t h = new_time->tm_hour;
+		uint8_t d = new_time->tm_mday;
 		uint8_t M = new_time->tm_mon  + 1;
-		uint8_t y = new_time->tm_year ;
+		uint8_t y = new_time->tm_year % 100;
 
 		TUYAMessage msg(TUYAMessage::MSG_CMD_OBTAIN_LOCAL_TIME);
 		uint8_t payload[8] = {01,y,M,d,h,m,s,w};
