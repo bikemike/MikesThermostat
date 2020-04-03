@@ -1,6 +1,8 @@
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
+#include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include "ThermostatState.h"
 
 
@@ -22,9 +24,9 @@ public:
 
 private:
 	String deviceName;
-	class ESP8266WebServer* server = nullptr;
-	class ThermostatState* state = nullptr;
-	class ESP8266HTTPUpdateServer* httpUpdater = nullptr;
+	ESP8266WebServer* server = nullptr;
+	ThermostatState* state = nullptr;
+	ESP8266HTTPUpdateServer* httpUpdater = nullptr;
 
 };
 #endif
